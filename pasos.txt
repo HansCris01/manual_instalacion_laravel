@@ -1,0 +1,462 @@
+
+----PASOS PARA CREAR PROYECTO DE CERO -----
+
+
+Codigo para crear proyecto: laravel new mi_proyecto
+
+
+1) primero MODELO Y CONTROLADOR
+
+crear el modelo y controlador:
+
+php artisan make:model Empleado -mcr
+
+2) Ubicacion donde esta el modelo, controlador y migration
+
+database/migrations/    --> Base de datos
+
+app/Models/    ---> modelo
+
+app/Http/Controllers   ---> controlador
+
+
+3) Ir a migration database/migrations/ 
+
+   vamos a poner estos, datos:
+
+
+   $table->string('Nombre');
+   $table->string('ApellidoPaterno');
+   $table->string('ApellidoMaterno');
+
+
+4) Ir a (.env) para poner el nombre de la base de datos que creastes: mi_base_de_datos
+
+
+5) Ejecutar la creacion de la tabla desde laravel a mysql 
+
+comando :
+
+ php artisan migrate
+
+6) Entorno grafico
+
+  resources/views/ 
+
+ahi esta la vista
+
+Crear carpeta de entorno grafico 
+
+crear dentro de views/
+
+empleado/
+create.blade.php
+index.blade.php
+edit.blade.php
+form.blade.php
+
+7) configurar ruta en la carpeta:
+
+
+ routes/web.php
+
+escribir dentro de web.php
+
+Route::get('/empleado', function () {
+    return view('empleado.index');
+});
+
+8) poner lo que va requerir para llamar al controlador:
+
+en el archivo : routes/web.php
+
+
+arriba escribir: 
+
+use App\http\Controllers\EmpleadoController;
+
+----------ir al controlador y escribir esto----------
+
+public function create()
+    {
+       return view('empleado.create');
+    }
+
+--------ir a web.php --------------------
+
+para acceder al create formulario para crear
+
+Route::get('empleado/create',[EmpleadoController::class,'create']);
+Route::resource('empleado',EmpleadoController::class);
+
+----------------------------------------------------
+Ahora ir al controller Empleado
+
+public function index()
+    {
+        return view('empleado.index');
+    }
+
+
+----ir al formulario create ------
+
+crear nuestro formulario  con 3 cajas de texto para guardar nombre, apellidos.
+
+
+en name para los imput siempre se usara name="nombre"
+
+para form donde dice action = "{{ url('/empleado') }}"
+
+abajo de form escribir la llave de seguridad:  @csrf
+
+
+-----ir al controlador 
+
+   public function store(Request $request)
+    {
+      $datosEmpleado = request()->except('_token');;
+        Empleado::insert($datosEmpleado);
+
+        $datos['empleados'] = Empleado::paginate(5);
+        return view('empleado.index',$datos);
+    }
+------------------------------------------------con eso termina Agregar datos a la BD
+
+
+----listar datos -----
+
+---modificar controller -----
+
+  public function index()
+    {
+        $datos['empleados'] = Empleado::paginate(5);
+        return view('empleado.index',$datos);
+    }
+
+
+---ir a index ------
+
+hacer una tabla 
+
+<table>
+<thead>
+  <tr> 
+    <th>#</th>  
+    <th>Nombre</th>
+    <th>Apellido Paterno</th>      
+    <th>Apellido Materno</th>
+    <th>Acciones</th>
+  </tr> 
+<thead>
+<tbody>
+    @foreach( $empleados as $empleado )
+   <tr>
+      <td> {{ $empleado->id }} </td>
+      <td> {{ $empleado->Nombre }}</td>
+      <td> {{ $empleado->ApellidoPaterno }}</td>
+      <td> {{ $empleado->ApellidoMaterno }}</td>
+      <td>Editar/Eliminar</td>
+   </tr>
+   @endforeach
+</tbody>
+</table>
+
+
+
+--------eliminar --------
+
+ir a index y modificar el listar 
+
+
+
+<table>
+<thead>
+  <tr> 
+    <th>#</th>  
+    <th>Nombre</th>
+    <th>Apellido Paterno</th>      
+    <th>Apellido Materno</th>
+    <th>Acciones</th>
+  </tr> 
+<thead>
+<tbody>
+    @foreach( $empleados as $empleado )
+   <tr>
+      <td> {{ $empleado->id }} </td>
+      <td> {{ $empleado->Nombre }}</td>
+      <td> {{ $empleado->ApellidoPaterno }}</td>
+      <td> {{ $empleado->ApellidoMaterno }}</td>
+      <td>Editar/
+      <form action="{{ url('/empleado/'.$empleado->id) }}" method="post">
+      @csrf
+      {{ method_field('DELETE') }}
+      <input action="submit" onclick="return confirm('Quieres borrar?')" value="borrar">
+     </form>
+      </td>
+   </tr>
+   @endforeach
+</tbody>
+</table>
+
+
+modificar controlador :
+
+  public function destroy($id)
+    {
+        Empleado::destroy($id);
+        return redirect('empleado');
+    }
+
+
+
+-----Editar --------
+
+en el formulario edit solo tiene que tener esto 
+
+
+edit.blade.php
+
+<h2>Editar empleado</h2>
+
+<form action="{{ url('/empleado') }}" method="post">
+@csrf
+@include('empleado.form');  
+</form> 
+
+
+---------------
+
+form.blade.php
+
+<label for="fname">Nombre:</label><br>
+  <input type="text" id="fname" name="Nombre" id="Nombre"><br><br>
+  <label for="lname">Apellido Paterno:</label><br>
+  <input type="text" id="lname" name="ApellidoPaterno" id="ApellidoPaterno"><br><br>
+  <label for="lname">Apellido Materno:</label><br>
+  <input type="text" id="lname" name="ApellidoMaterno" id="ApellidoMaterno"><br><br>
+  <button>Agregar</button>
+
+
+---ir al index 
+
+
+<table>
+<thead>
+  <tr> 
+    <th>#</th>  
+    <th>Nombre</th>
+    <th>Apellido Paterno</th>      
+    <th>Apellido Materno</th>
+    <th>Acciones</th>
+  </tr> 
+<thead>
+<tbody>
+    @foreach( $empleados as $empleado )
+   <tr>
+      <td> {{ $empleado->id }} </td>
+      <td> {{ $empleado->Nombre }}</td>
+      <td> {{ $empleado->ApellidoPaterno }}</td>
+      <td> {{ $empleado->ApellidoMaterno }}</td>
+      <td>  
+       <a href="{{ url('/empleado/'.$empleado->id.'/edit') }}"> Editar </a>
+      ||
+      <form action="{{ url('/empleado/'.$empleado->id) }}" method="post">
+      @csrf
+      {{ method_field('DELETE') }}
+      <input action="submit" onclick="return confirm('Quieres borrar?')" value="borrar">
+     </form>
+      </td>
+   </tr>
+   @endforeach
+</tbody>
+</table>
+
+ir al controlador:
+escribe esto:
+
+ public function edit($id)
+    {
+        $empleado=Empleado::findOrfail($id);
+
+        return view('empleado.edit',compact('empleado'));
+    }
+
+
+ir al formulario form.blade.php
+
+
+<label for="fname">Nombre:</label><br>
+  <input type="text" id="fname" name="Nombre" id="Nombre"
+  value="{{ $empleado->Nombre }}"><br><br>
+  <label for="lname">Apellido Paterno:</label><br>
+  <input type="text" id="lname" name="ApellidoPaterno" id="ApellidoPaterno"
+  value="{{ $empleado->ApellidoPaterno }}"><br><br>
+  <label for="lname">Apellido Materno:</label><br>
+  <input type="text" id="lname" name="ApellidoMaterno" id="ApellidoMaterno"
+  value="{{ $empleado->ApellidoMaterno }}"><br><br>
+  <button>Agregar</button>
+
+
+
+------ Ahora  guardar la informacion modificada -----
+
+ Modificar edit.blade
+
+<h2>Editar empleado</h2>
+
+<form action="{{ url('/empleado/'.$empleado->id ) }}" method="post">
+@csrf
+{{ method_field('PATCH') }}
+@include('empleado.form') 
+</form> 
+
+
+---update
+
+   public function update(Request $request, $id)
+    {
+        $datosEmpleado = request()->except(['_token','_method']);
+         Empleado::where('id','=',$id)->update($datosEmpleado);
+         $datos['empleados'] = Empleado::paginate(5);
+         return view('empleado.index',$datos);
+    }
+
+--------------------
+
+configurando al boton agregar
+
+en el index agregar esto :
+
+<a href="{{ url('/empleado'.'/create') }}">Agregar</a>
+
+
+-----NOTA------
+
+Nota: En caso necesites codigo para crear un nuevo controlador: php artisan make:controller nombre-controlador
+
+Nota: comando para ejecutar codigo de visualizacion de imagenes: comando: php artisan storage:link
+
+Nota: Para poner a produccion: 
+
+1) paso
+
+mi_sistema_web/app/Providers/RouteServiceProvider.php
+
+Dentro de ese archivo tienes que descomentar el codigo:
+
+   protected $namespace = 'App\\Http\\Controllers';
+
+2) paso 
+
+ Tu vistas tienen que verse de ese modelo: 
+
+  mi_sistema_web/routes/web.php
+
+  //Inicia en el login
+Route::get('/','UsuarioController@index');
+//crea usuario
+Route::view('/registro',"production/register")->name('registro');
+Route::post('/validar-registro', 'UsuarioController@register');
+Route::post('/validar-registro_a', 'UsuarioController@register_a');
+//Te manda a una pagina que su usuario se a creado el Menu TIENE SEGURIDAD ANTI HACKER
+Route::view('/privada',"production/presentacion")->middleware('auth')->name('privada');
+
+//Te cierra secion para poder ir a logearte
+Route::get('/logout','UsuarioController@logout')->name('logout');
+//El controlador de logut te manda al login
+Route::view('/login', "production/login")->name('login');
+//Inicia secion
+Route::post('/inicia-sesion','UsuarioController@login')->name('inicia-sesion');
+
+//end Login
+
+En este modelo de vista se usa el "@"  porque asi funciona en producción. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

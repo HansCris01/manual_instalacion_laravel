@@ -1,0 +1,10 @@
+primero descarga xampp 
+php mayor a 7.3
+
+segundo instala composer
+
+tercero instala laravel : 
+
+composer global require laravel/installer
+
+solo se hace una vez
