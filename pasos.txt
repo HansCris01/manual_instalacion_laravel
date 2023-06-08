@@ -1,3 +1,54 @@
+Nota: En caso necesites codigo para crear un nuevo controlador: php artisan make:controller nombre-controlador
+
+Nota: comando para ejecutar codigo de visualizacion de imagenes: comando: php artisan storage:link
+
+En caso de que no muestre imagen hacer el siguiente paso
+
+_ borrar la carpeta storage que esta en public/storage
+_ abrir git en el proyecto y ejecutar el codigo: php artisan storage:link
+
+Problema solucionado
+
+Nota: Para poner a produccion: 
+
+1) paso
+
+mi_sistema_web/app/Providers/RouteServiceProvider.php
+
+Dentro de ese archivo tienes que descomentar el codigo:
+
+   protected $namespace = 'App\\Http\\Controllers';
+
+2) paso 
+
+ Tu vistas tienen que verse de ese modelo: 
+
+  mi_sistema_web/routes/web.php
+
+  //Inicia en el login
+Route::get('/','UsuarioController@index');
+//crea usuario
+Route::view('/registro',"production/register")->name('registro');
+Route::post('/validar-registro', 'UsuarioController@register');
+Route::post('/validar-registro_a', 'UsuarioController@register_a');
+//Te manda a una pagina que su usuario se a creado el Menu TIENE SEGURIDAD ANTI HACKER
+Route::view('/privada',"production/presentacion")->middleware('auth')->name('privada');
+
+//Te cierra secion para poder ir a logearte
+Route::get('/logout','UsuarioController@logout')->name('logout');
+//El controlador de logut te manda al login
+Route::view('/login', "production/login")->name('login');
+//Inicia secion
+Route::post('/inicia-sesion','UsuarioController@login')->name('inicia-sesion');
+
+//end Login
+
+En este modelo de vista se usa el "@"  porque asi funciona en producción. 
+
+
+
+
+
 
 ----PASOS PARA CREAR PROYECTO DE CERO -----
 
