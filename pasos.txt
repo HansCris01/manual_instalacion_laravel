@@ -1,3 +1,23 @@
+codigo para subir mas proyctos de php laravel al servidor y no de errores por sesission:
+
+ir al proyecto y busca este archivo: Mi_proyecto/config/session.php
+
+En el archivo session.php abrir y cambiar el nombre: 
+
+linea: 131 
+
+    'cookie' => env(
+        'SESSION_COOKIE',
+        Str::slug(env('APP_NAME', 'laravelB'), '_').'_session'  --> decia laravel pero lo cambie a laravelB
+    ),
+
+linea 88: 
+
+'table' => 'sessions_b'  decia session lo cambie a sessions_b pero para el siguiente proyecto tiene que ser 
+diferente
+
+Ahora es importante poner nombres diferentes para cada proyecto
+---------------------------------------
 Nota: En caso necesites codigo para crear un nuevo controlador: php artisan make:controller nombre-controlador
 
 Nota: comando para ejecutar codigo de visualizacion de imagenes: comando: php artisan storage:link
@@ -8,6 +28,10 @@ _ borrar la carpeta storage que esta en public/storage
 _ abrir git en el proyecto y ejecutar el codigo: php artisan storage:link
 
 Problema solucionado
+
+comando para instalar la libreria de descarga de PDF para reportes:
+composer require dompdf/dompdf
+
 
 Nota: Para poner a produccion: 
 
@@ -44,9 +68,6 @@ Route::post('/inicia-sesion','UsuarioController@login')->name('inicia-sesion');
 //end Login
 
 En este modelo de vista se usa el "@"  porque asi funciona en producción. 
-
-
-
 
 
 
@@ -381,47 +402,101 @@ en el index agregar esto :
 <a href="{{ url('/empleado'.'/create') }}">Agregar</a>
 
 
------NOTA------
 
-Nota: En caso necesites codigo para crear un nuevo controlador: php artisan make:controller nombre-controlador
 
-Nota: comando para ejecutar codigo de visualizacion de imagenes: comando: php artisan storage:link
 
-Nota: Para poner a produccion: 
 
-1) paso
 
-mi_sistema_web/app/Providers/RouteServiceProvider.php
 
-Dentro de ese archivo tienes que descomentar el codigo:
 
-   protected $namespace = 'App\\Http\\Controllers';
 
-2) paso 
 
- Tu vistas tienen que verse de ese modelo: 
 
-  mi_sistema_web/routes/web.php
 
-  //Inicia en el login
-Route::get('/','UsuarioController@index');
-//crea usuario
-Route::view('/registro',"production/register")->name('registro');
-Route::post('/validar-registro', 'UsuarioController@register');
-Route::post('/validar-registro_a', 'UsuarioController@register_a');
-//Te manda a una pagina que su usuario se a creado el Menu TIENE SEGURIDAD ANTI HACKER
-Route::view('/privada',"production/presentacion")->middleware('auth')->name('privada');
 
-//Te cierra secion para poder ir a logearte
-Route::get('/logout','UsuarioController@logout')->name('logout');
-//El controlador de logut te manda al login
-Route::view('/login', "production/login")->name('login');
-//Inicia secion
-Route::post('/inicia-sesion','UsuarioController@login')->name('inicia-sesion');
 
-//end Login
 
-En este modelo de vista se usa el "@"  porque asi funciona en producción. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
